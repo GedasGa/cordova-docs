@@ -37,8 +37,8 @@ the CLI, see [Cordova CLI Reference][cli_reference].
 Cordova for Android requires the Android SDK which can be installed
 on OS X, Linux or Windows. See the Android SDK's
 [System Requirements](http://developer.android.com/sdk/index.html#Requirements).
-Cordova's latest Android package supports up to Android [API Level](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels) 25.
-The supported Android API Levels and Android Versions for the past 
+Cordova's latest Android package supports up to Android [API Level](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels) 27.
+The supported Android API Levels and Android Versions for the past
 few cordova-android releases can be found in this table:
 
 cordova-android Version | Supported Android API-Levels | Equivalent Android Version
@@ -75,10 +75,10 @@ As of Cordova-Android 6.4.0, [Gradle](https://gradle.org/install/) is now requir
 
 When installing on Windows, you need to add Gradle to your path, (see [Setting Environment Variables](#setting-environment-variables))
 
-#### Android SDK
+### Android SDK
 
-Install [Android Studio][android_studio].
-Detailed installation instructions are on Android's developer site.
+Install [Android Studio][android_studio]. Follow the instructions at the linked Android Developer site to get started.
+Opening Android Studio for the first time will guide you through the process of installing the Android SDK.
 
 #### Adding SDK Packages
 
@@ -87,14 +87,14 @@ whatever [API level](http://developer.android.com/guide/topics/manifest/uses-sdk
 you wish to target. It is recommended that you install the highest SDK version
 that your version of cordova-android supports (see [Requirements and Support](#requirements-and-support)).
 
-Open the Android SDK Manager (run `sdkmanager` from the terminal)
+Open the Android SDK Manager (`Tools > SDK Manager` in Android Studio, or `sdkmanager` on the command line),
 and make sure the following are installed:
 
 1. Android Platform SDK for your targeted version of Android
 1. Android SDK build-tools version 19.1.0 or higher
-1. Android Support Repository (found under "Extras")
+1. Android Support Repository (found under the "SDK Tools" tab)
 
-See Android's documentation on [Installing SDK Packages](https://developer.android.com/studio/intro/update.html)
+See Android's documentation on [Installing SDK Packages](https://developer.android.com/studio/intro/update)
 for more details.
 
 ### Setting environment variables
@@ -222,7 +222,7 @@ You can set these properties in one of four ways:
       like so:
 
       ```
-      # In <your-project>/platforms/android/gradle.properties
+      # In <your-project>/platforms/android/app/gradle.properties
       cdvMinSdkVersion=20
       ```
 
@@ -230,7 +230,7 @@ You can set these properties in one of four ways:
     and setting the property like so:
 
       ```groovy
-      // In <your-project>/platforms/android/build-extras.gradle
+      // In <your-project>/platforms/android/app/build-extras.gradle
       ext.cdvMinSdkVersion = 20
       ```
 
@@ -246,18 +246,32 @@ as part of the build command by using the `before_build`
 If you need to customize `build.gradle`, rather than edit it directly, you
 should create a sibling file named `build-extras.gradle`. This file will be
 included by the main `build.gradle` when present. This file must be placed in
-the android platform directory (`<your-project>/platforms/android`), so it is
-recommended that you copy it over via a script attached to the `before_build`
-[hook](../../appdev/hooks/index.html).
+the `app` folder of the Android platform directory (`<your-project>/platforms/android/app`), 
+so it is recommended that you copy it over via a script attached to the 
+`before_build` [hook](../../appdev/hooks/index.html).
 
 Here's an example:
 
 ```groovy
 // Example build-extras.gradle
 // This file is included at the beginning of `build.gradle`
+
+// special properties (see `build.gradle`) can be set and overwrite the defaults
 ext.cdvDebugSigningPropertiesFile = '../../android-debug-keys.properties'
 
-// When set, this function allows code to run at the end of `build.gradle`
+// normal `build.gradle` configuration can happen
+android {
+  defaultConfig {
+    testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+  }
+}
+dependencies {
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  }
+}
+
+// When set, this function `ext.postBuildExtras` allows code to run at the end of `build.gradle`
 ext.postBuildExtras = {
     android.buildTypes.debug.applicationIdSuffix = '.debug'
 }
