@@ -293,7 +293,3 @@ If you want to support displays with different DPI densities at the same time, y
   <icon src="res/electron/icon@4x.png" target="installer" />
 </platform>
 ```
-
-### Customizing the Application's Main Process
-
-In the `{PROJECT_ROOT_DIR}/platform/electron/platform_www/` directory, the file `main.js` defines the application's main process. We can customize the application's window appearance as well as defining or enabling additional features in this file.
